@@ -1,0 +1,120 @@
+###############################################################################
+##                                                                           ##
+##         The cold tolerance of an adult winter-active stonefly:            ##
+##    How Allocapnia pygmaea avoids freezing in Nova Scotian winters         ##
+##                                                                           ##
+###############################################################################
+
+# R script associated with the manuscript "The cold tolerance of an adult
+# winter-active stonefly: How Allocapnia pygmaea (Plecoptera: Capniidae)
+# avoids freezing in Nova Scotian winters"
+# Scripted in R v4.2.2
+
+
+
+###############################################################################
+# Set Working Directory & Load Data                                           #
+###############################################################################
+
+setwd("~/Stoneflies")
+
+
+# Critical Thermal Minimum (CTmin)
+CTmin <- read.csv("CTmin.csv")
+# VARIABLES
+# Stonefly ID
+# Mass (g)
+# CTmin (C)
+
+
+# Supercooling Point (SCP)
+SCP <- read.csv("SCP.csv")
+# VARIABLES
+# Stonefly ID
+# Mass (g)
+# SCP (C)
+# Survival
+
+
+# Cryoprotectants
+cryo <- read.csv("Cryoprotectants.csv")
+# VARIABLES:
+# Stonefly ID
+# Treatment: Field-collected/Cold-shocked
+# Mass (g)
+# Cryoprotectants:  Proline (µmol/g),
+#                   myo-Inositol (µmol/g),
+#                   Glycerol (µmol/g),
+#                   Trehalose (umol/g),
+#                   & Glucose (umol/g)
+
+
+
+###############################################################################
+##                                                                           ##
+##                 SCP & CTmin Correlation to Stonefly Mass                  ##
+##                                                                           ##
+###############################################################################
+
+# CTmin
+lmCTmin <- lm(CTmin ~ Mass, data = CTmin)
+summary(lmCTmin)
+# F-statistic: 0.001954
+# DF: 4
+# p-value: 0.9669
+# Not significant
+
+
+# SCP
+lmSCP <- lm(SCP ~ Mass, data = SCP)
+summary(lmSCP)
+# F-statistic: 0.1825
+# DF: 24
+# p-value: 0.673
+# Not significant
+
+
+
+###############################################################################
+##                                                                           ##
+##  Table 2. Effect of Cold-Shock on Stonefly Cryoprotectant Concentrations  ##
+##                                                                           ##
+###############################################################################
+
+cryo$Treatment <- factor(cryo$Treatment, levels = c("Field-collected",
+                                                    "Cold-shocked"))
+
+lmInositol <- lm(cryo$Inositol~cryo$Mass+cryo$Treatment)
+anova(lmInositol)
+#               Df Sum Sq Mean Sq F value    Pr(>F)    
+#cryo$Mass       1 815.95  815.95  24.551 6.668e-05 ***
+#cryo$Treatment  1 163.28  163.28   4.913   0.03783 *  
+#Residuals      21 697.94   33.24    
+
+lmProline <- lm(cryo$Proline~cryo$Mass+cryo$Treatment)
+anova(lmProline)
+#               Df Sum Sq Mean Sq F value  Pr(>F)  
+#cryo$Mass       1 12.843 12.8430  3.0904 0.09332 .
+#cryo$Treatment  1 13.157 13.1566  3.1658 0.08967 .
+#Residuals      21 87.272  4.1558
+
+lmGlucose <- lm(cryo$Glucose~cryo$Mass+cryo$Treatment)
+anova(lmGlucose)
+#               Df Sum Sq Mean Sq F value  Pr(>F)  
+#cryo$Mass       1 13.038 13.0381  3.9676 0.05955 .
+#cryo$Treatment  1  2.501  2.5006  0.7610 0.39289  
+#Residuals      21 69.009  3.2861 
+
+lmTrehalose <- lm(cryo$Trehalose~cryo$Mass+cryo$Treatment)
+anova(lmTrehalose)
+#               Df  Sum Sq Mean Sq F value  Pr(>F)  
+#cryo$Mass       1  0.7681 0.76813  1.2213 0.28160  
+#cryo$Treatment  1  2.1215 2.12151  3.3732 0.08046 .
+#Residuals      21 13.2076 0.62894  
+
+lmGlycerol <- lm(cryo$Glycerol~cryo$Mass+cryo$Treatment)
+anova(lmGlycerol)
+#               Df Sum Sq Mean Sq F value    Pr(>F)    
+#cryo$Mass       1 115.22  115.22  5.2602   0.03224 *  
+#cryo$Treatment  1 835.58  835.58 38.1461 3.973e-06 ***
+#Residuals      21 460.00   21.90                      
